@@ -1,0 +1,23 @@
+{
+  "name": "neightborhood",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "3",
+    "react": "^16.3.2",
+    "react-bootstrap": "^0.32.1",
+    "react-debounce-input": "^3.2.0",
+    "react-dom": "^16.3.2",
+    "react-google-maps": "^9.4.5",
+    "react-scripts": "1.1.4",
+    "recompose": "^0.27.0",
+    "request": "^2.85.0",
+    "request-promise-native": "^1.0.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
