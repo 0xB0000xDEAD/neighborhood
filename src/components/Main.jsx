@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import port from '../config'
+
 // import "../style/Main.css";
 import { PageHeader } from "react-bootstrap";
 import { Grid, Row, Col, Well, Button } from "react-bootstrap";
@@ -28,7 +30,9 @@ class Main extends Component {
 
     let loadData = () => {
       let dummy = {
-        url: "http://localhost:3004/searchResponse",
+        // url: "http://localhost:3004/searchResponse",
+        url: `http://localhost:${port}/searchResponse`,
+
         method: "GET"
       };
       let option = {
@@ -58,7 +62,7 @@ class Main extends Component {
         let imageProcess = Promise.all(
           data.map(el => {
             let dummy = {
-              url: "http://localhost:3004/photoResponse",
+              url: `http://localhost:${port}/photoResponse`,
               method: "GET"
             };
             let option = {
@@ -72,11 +76,11 @@ class Main extends Component {
                 limit: 3
               }
             };
-            return callAPI(dummy).then(function(output) {
+            return callAPI(dummy).then(function (output) {
               let response = JSON.parse(output);
               return `${
                 response.response.photos.items[0].prefix
-              }500x300${response.response.photos.items[0].suffix}`;
+                }500x300${response.response.photos.items[0].suffix}`;
             });
           })
         );
@@ -95,18 +99,18 @@ class Main extends Component {
               type: el.venue.categories[0].name,
               icon: undefined,
               isFocusOn: false,
-              photos: gen().next()
+              photos: gen().next().value
             };
             temp.push(tmp);
           }
+          this.setState({ places: temp });
+          this.setState({ filteredPlaces: temp });
+          this.setState({ dataLoaded: true });
         });
 
-        this.setState({ places: temp });
-        this.setState({ filteredPlaces: temp });
-        this.setState({ dataLoaded: true });
       });
     };
-    // loadData();
+    loadData();
 
     let loadStoredData = () => {
       let places = [];
@@ -129,7 +133,7 @@ class Main extends Component {
       this.setState({ filteredPlaces: places });
       this.setState({ dataLoaded: true });
     };
-    loadStoredData();
+    // loadStoredData();
   }
 
   testApi() {
@@ -154,6 +158,9 @@ class Main extends Component {
       });
       if (results.length > 0) {
         this.setState({ filteredPlaces: results });
+      }
+      else {
+        this.setState({filteredPlaces: []})
       }
     } else {
       this.setState({ filteredPlaces: this.state.places });
@@ -181,7 +188,7 @@ class Main extends Component {
   };
 
   render() {
-    // console.log(this.state);
+    console.log(this.state);
     if (this.state.dataLoaded) {
       return (
         <main>
@@ -203,7 +210,7 @@ class Main extends Component {
                 <hr />
                 <Button onClick={this.testApi}>test the API</Button>
                 <Well>
-                  <MyMap places={this.state.filteredPlaces} />
+                  {/* <MyMap places={this.state.filteredPlaces} /> */}
                 </Well>
                 <hr />
                 <Details place={this.state.placeInFocus} />

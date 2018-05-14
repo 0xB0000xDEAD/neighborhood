@@ -1,9 +1,7 @@
 import React from "react";
-import { Jumbotron } from "react-bootstrap";
+import { Jumbotron, Button } from "react-bootstrap";
 
 const Details = props => {
-  // console.log(props);
-
   return (
     props.place !== undefined && (
       <div >
@@ -12,9 +10,9 @@ const Details = props => {
           <h4>{props.place.location.address}</h4>
           <img src={props.place.photos} alt="" />
 
-          {/* <p>
-           <Button bsStyle="primary">Call</Button>
-         </p> */}
+          <p>
+            <Button bsStyle="primary">Call</Button>
+          </p>
         </Jumbotron>
       </div>
     )
