@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 
 class List extends Component {
-  refs = {
-    //placeholder
-  }
+  
   componentDidMount() {}
 
   handleClick = (id, e) => {
@@ -15,8 +13,7 @@ class List extends Component {
     // console.log(`the id of the element is: ${id}`);
     this.props.setFocusOnMarker(id, e);
     // e.target.value.setAttribute("class", "listElementHover")
-    console.log(e);
-    
+    // console.log(e);
   };
   render() {
     // console.log(this.props);
@@ -24,13 +21,13 @@ class List extends Component {
     let listGroup = this.props.places.map(el => {
       return (
         <ListGroupItem
-        active //set through a Ref
+          active={el.areWeHovering}
           key={el.id}
           header={el.name}
           onClick={e => this.handleClick(el.id, e)}
           onMouseOver={e => this.handleMouseOver(el.id, e)}
         >
-          {el.name}
+          {el.location.formattedAddress}
         </ListGroupItem>
       );
     });

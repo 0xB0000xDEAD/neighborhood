@@ -1,5 +1,5 @@
 import React from "react";
-import { compose, withProps } from "recompose";
+import { compose, withProps /* withHandlers */ } from "recompose";
 import {
   withScriptjs,
   withGoogleMap,
@@ -7,7 +7,6 @@ import {
   Marker,
   InfoWindow
 } from "react-google-maps";
-import myIcon from "./myIcon";
 
 const MyMapComponent = compose(
   withProps({
@@ -22,31 +21,48 @@ const MyMapComponent = compose(
   withScriptjs,
   withGoogleMap
 )(props => (
-  // console.log(props.places),
   <GoogleMap
-    defaultZoom={10}
-    defaultCenter={{
-      lat: props.places[0].location.lat,
-      lng: props.places[0].location.lng
+    ref={ref => {
+      this.map = ref;
     }}
+    defaultZoom={10}
+    defaultCenter={props.centerPos}
   >
     {props.places.map(element => {
+      let markerId = element.id;
       return (
-        <Marker
-          defaultAnimation={"drop"}
-          key={element.id}
-          position={{
-            lat: element.location.lat,
-            lng: element.location.lng
-          }}
-          // onClick={props.onMarkerClick}
-          onMouseOver={props.onMouseOver}
-          icon={element.icon}
-        >
-          {/* <InfoWindow>
-                  <h3>{element.name}</h3>
-                </InfoWindow> */}
-        </Marker>
+        props.isMarkerShown && (
+          <Marker
+            animation={"DROP"}
+            title={element.name}
+            // label={markerId}
+            key={element.id}
+            position={{
+              lat: element.location.lat,
+              lng: element.location.lng
+            }}
+            onMouseOver={e => {
+              props.onMouseOver(markerId, e);
+            }}
+            onMouseOut={e => {
+              props.onMouseOver(null, e);
+            }}
+            onClick={e => {
+              this.map.panTo({
+                lat: element.location.lat,
+                lng: element.location.lng
+              });
+              props.onMarkerClick(markerId, e);
+            }}
+            icon={element.icon}
+          >
+            {element.isFocusOn && (
+              <InfoWindow /* onCloseClick={props.onToggleOpen} */>
+                <p>{element.name}</p>
+              </InfoWindow>
+            )}
+          </Marker>
+        )
       );
     })}
   </GoogleMap>
@@ -54,34 +70,48 @@ const MyMapComponent = compose(
 
 class MyMap extends React.PureComponent {
   state = {
-    isMarkerShown: true
+    isMarkerShown: false,
+    position: {}
   };
 
   componentDidMount() {
     this.delayedShowMarker();
-    // aggiunta
   }
-
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.places.length > 0) {
+      let pos = {};
+      pos.lat = nextProps.places[0].location.lat;
+      pos.lng = nextProps.places[0].location.lng;
+      return {
+        position: pos
+      };
+    } else {
+      return null;
+    }
+  }
   delayedShowMarker = () => {
     setTimeout(() => {
       this.setState({ isMarkerShown: true });
-    }, 3000);
+    }, 1500);
   };
 
-  handleMarkerClick = () => {
-    this.setState({ isMarkerShown: false });
-    this.delayedShowMarker();
+  handleMarkerClick = (id, e) => {
+    this.props.diveInDetails(id, e);
   };
-  
-  handleMouseOver(e) {}
+
+  handleMarkerOver = (id, e) => {
+    // console.log(e);
+    this.props.setFocusOnMarker(id, e);
+  };
 
   render() {
     return (
       <MyMapComponent
-        isMarkerShown={this.state.isMarkerShown}
         onMarkerClick={this.handleMarkerClick}
-        onMouseOver={this.handleMouseOver}
+        onMouseOver={this.handleMarkerOver}
         places={this.props.places}
+        centerPos={this.state.position}
+        isMarkerShown={this.state.isMarkerShown}
       />
     );
   }

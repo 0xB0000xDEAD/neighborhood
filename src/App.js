@@ -6,7 +6,6 @@ import 'bootstrap/dist/css/bootstrap-theme.css';
 // components takes precedence over default styles.
 
 import "./App.css";
-import logo from "./logo.svg";
 
 import Main from "./components/Main";
 

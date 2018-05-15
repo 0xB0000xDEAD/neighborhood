@@ -1,18 +1,20 @@
 import React, { Component } from "react";
 
-import port from '../config'
+import port from "../config";
 
 // import "../style/Main.css";
 import { PageHeader } from "react-bootstrap";
 import { Grid, Row, Col, Well, Button } from "react-bootstrap";
+
+
 
 import Aside from "./Aside";
 
 import dummy from "../response_dump";
 import MyMap from "./MyMap";
 import Details from "./Details";
-// import myIcon from './icons8-save-as-50.png' // work
-import myIcon from "./myIcon"; // work
+import focusPin from "../icons/baseline-place-24px_1.svg";
+import defaultPin from "../icons/baseline-place-24px_2.svg";
 import callAPI from "../utils/callApi";
 
 class Main extends Component {
@@ -21,7 +23,7 @@ class Main extends Component {
     places: [],
     filteredPlaces: [],
     // showDetails: false,
-    placeInFocus: undefined,
+    placeInFocus: undefined, // place to show the details
     dataLoaded: false
   };
 
@@ -30,24 +32,36 @@ class Main extends Component {
 
     let loadData = () => {
       let dummy = {
-        // url: "http://localhost:3004/searchResponse",
         url: `http://localhost:${port}/searchResponse`,
 
         method: "GET"
       };
       let option = {
-        url: "",
+        url: "https://api.foursquare.com/v2/venues/search",
         method: "GET",
         qs: {
-          client_id: "CLIENT_ID",
-          client_secret: "CLIENT_SECRET",
+          client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
+          client_secret: "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
           ll: "40.7243,-74.0018",
-          query: "coffee",
+          query: "lake",
           v: "20180323",
-          limit: 1
+          limit: 15
         }
       };
-      // console.log(callAPI(dummy)); // return a Request
+      let search = {
+        url: "https://api.foursquare.com/v2/venues/search",
+        method: "GET",
+        qs: {
+          client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
+          client_secret: "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
+          near: "los angeles",
+          // query: "lake",
+          categoryId: "4bf58dd8d48988d167941735",
+          // radius: "50000",
+          v: "20180323",
+          limit: 10
+        }
+      };
 
       // alternative
 
@@ -55,9 +69,11 @@ class Main extends Component {
       //   console.log(data.json());
       // });
 
-      callAPI(dummy).then(output => {
+      callAPI(search).then(output => {
         let responseJ = JSON.parse(output);
-        let data = responseJ.response.groups[0].items; // place array
+        // console.log(responseJ);
+
+        let data = responseJ.response.venues; // place array
 
         let imageProcess = Promise.all(
           data.map(el => {
@@ -65,40 +81,50 @@ class Main extends Component {
               url: `http://localhost:${port}/photoResponse`,
               method: "GET"
             };
-            let option = {
-              url: `https://api.foursquare.com/v2/venues/${el.venue.id}/photos`,
+
+            let details = {
+              url: `https://api.foursquare.com/v2/venues/${el.id}`,
               method: "GET",
               qs: {
                 client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
                 client_secret:
                   "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
                 v: "20180323",
-                limit: 3
+                limit: 1
               }
             };
-            return callAPI(dummy).then(function (output) {
+            return callAPI(dummy).then(function(output) {
+              // console.log(output);
+              
               let response = JSON.parse(output);
+
               return `${
                 response.response.photos.items[0].prefix
-                }500x300${response.response.photos.items[0].suffix}`;
+              }500x300${response.response.photos.items[0].suffix}`;
             });
           })
         );
 
         imageProcess.then(array => {
+          
           function* gen() {
             for (const el of array) {
               yield el;
             }
           }
           for (const el of data) {
+            // console.log(el.url); // check if a attribute is present
+
             let tmp = {
-              id: el.venue.id,
-              name: el.venue.name,
-              location: el.venue.location,
-              type: el.venue.categories[0].name,
-              icon: undefined,
+              id: el.id,
+              name: el.name,
+              location: el.location,
+              type: el.categories[0].name,
+              description: el.description,
+              url: el.url,
+              icon: defaultPin,
               isFocusOn: false,
+              areWeHovering: false,
               photos: gen().next().value
             };
             temp.push(tmp);
@@ -107,7 +133,6 @@ class Main extends Component {
           this.setState({ filteredPlaces: temp });
           this.setState({ dataLoaded: true });
         });
-
       });
     };
     loadData();
@@ -122,6 +147,7 @@ class Main extends Component {
           name: el.venue.name,
           location: el.venue.location,
           type: el.venue.categories[0].name,
+          description: el.venue.description,
           icon: undefined,
           isFocusOn: false,
           photos: undefined
@@ -158,9 +184,8 @@ class Main extends Component {
       });
       if (results.length > 0) {
         this.setState({ filteredPlaces: results });
-      }
-      else {
-        this.setState({filteredPlaces: []})
+      } else {
+        this.setState({ filteredPlaces: [] });
       }
     } else {
       this.setState({ filteredPlaces: this.state.places });
@@ -169,10 +194,13 @@ class Main extends Component {
   setFocusOnMarker = (id, event) => {
     let tmp = this.state.filteredPlaces.reduce((store, el) => {
       if (el.id === id) {
-        el.icon = myIcon;
+        el.icon = focusPin;
+        el.areWeHovering = true;
         store.push(el);
       } else {
-        el.icon = undefined;
+        el.icon = defaultPin;
+        el.areWeHovering = false;
+
         store.push(el);
       }
       return store;
@@ -181,14 +209,26 @@ class Main extends Component {
   };
 
   // called from list or marker
-  diveInDetails = id => {
-    let target = this.state.filteredPlaces.filter(el => el.id === id)[0];
 
+  diveInDetails = (id, event) => {
+    let target;
+    let tmp = this.state.filteredPlaces.reduce((store, el) => {
+      if (el.id === id) {
+        target = el;
+        el.isFocusOn = true;
+        store.push(el);
+      } else {
+        el.isFocusOn = false;
+        store.push(el);
+      }
+      return store;
+    }, []);
+    this.setState({ filteredPlaces: tmp });
     this.setState({ placeInFocus: target });
   };
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
     if (this.state.dataLoaded) {
       return (
         <main>
@@ -199,6 +239,7 @@ class Main extends Component {
                   places={this.state.filteredPlaces}
                   search={this.search}
                   setFocusOnMarker={this.setFocusOnMarker}
+                  // diveInDetails={this.diveInDetails}
                   diveInDetails={this.diveInDetails}
                 />
               </Col>
@@ -208,9 +249,13 @@ class Main extends Component {
                   <small> a demo project</small>
                 </PageHeader>
                 <hr />
-                <Button onClick={this.testApi}>test the API</Button>
+                {/* <Button onClick={this.testApi}>test the API</Button> */}
                 <Well>
-                  {/* <MyMap places={this.state.filteredPlaces} /> */}
+                  <MyMap
+                    places={this.state.filteredPlaces}
+                    setFocusOnMarker={this.setFocusOnMarker}
+                    diveInDetails={this.diveInDetails}
+                  />
                 </Well>
                 <hr />
                 <Details place={this.state.placeInFocus} />
