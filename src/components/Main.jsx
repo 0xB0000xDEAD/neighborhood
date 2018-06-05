@@ -5,17 +5,30 @@ import port from "../config";
 // import "../style/Main.css";
 import { PageHeader } from "react-bootstrap";
 import { Grid, Row, Col, Well, Button } from "react-bootstrap";
+import DebounceInput from "react-debounce-input";
 
-
+import {
+  Navbar,
+  NavItem,
+  NavDropdown,
+  NavbarBrand,
+  Nav,
+  MenuItem,
+  FormGroup,
+  FormControl
+} from "react-bootstrap";
 
 import Aside from "./Aside";
 
 import dummy from "../response_dump";
 import MyMap from "./MyMap";
 import Details from "./Details";
+import DropList from "./DropList";
 import focusPin from "../icons/baseline-place-24px_1.svg";
 import defaultPin from "../icons/baseline-place-24px_2.svg";
 import callAPI from "../utils/callApi";
+import Modal from "./Modal";
+import Autocomplete from "react-autocomplete";
 
 class Main extends Component {
   state = {
@@ -24,6 +37,7 @@ class Main extends Component {
     filteredPlaces: [],
     // showDetails: false,
     placeInFocus: undefined, // place to show the details
+    isModalShowed: false,
     dataLoaded: false
   };
 
@@ -95,7 +109,7 @@ class Main extends Component {
             };
             return callAPI(dummy).then(function(output) {
               // console.log(output);
-              
+
               let response = JSON.parse(output);
 
               return `${
@@ -106,7 +120,6 @@ class Main extends Component {
         );
 
         imageProcess.then(array => {
-          
           function* gen() {
             for (const el of array) {
               yield el;
@@ -180,7 +193,7 @@ class Main extends Component {
     console.log(`query is ${query}`);
     if (query) {
       let results = this.state.places.filter(el => {
-        return el.type.toLowerCase() === query.toString().trim();
+        return el.name.toLowerCase() === query.toString().trim();
       });
       if (results.length > 0) {
         this.setState({ filteredPlaces: results });
@@ -225,16 +238,113 @@ class Main extends Component {
     }, []);
     this.setState({ filteredPlaces: tmp });
     this.setState({ placeInFocus: target });
+    this.setState({ isModalShowed: true });
+  };
+  closeModal = () => {
+    this.setState({
+      isModalShowed: false
+    });
   };
 
   render() {
     // console.log(this.state);
     if (this.state.dataLoaded) {
+      // return (
+      //   <main>
+      //     <Grid>
+      //       <Row className="show-grid">
+      //         <Col xs={12} sm={3}>
+      //           <Aside
+      //             places={this.state.filteredPlaces}
+      //             search={this.search}
+      //             setFocusOnMarker={this.setFocusOnMarker}
+      //             diveInDetails={this.diveInDetails}
+      //           />
+      //         </Col>
+      //         <Col xs={12} sm={9}>
+      //           <PageHeader className="header">
+      //             Neighborhood
+      //             <small> a demo project</small>
+      //           </PageHeader>
+      //           <hr />
+      //           {/* <Button onClick={this.testApi}>test the API</Button> */}
+      //           <Well>
+      //             <MyMap
+      //               places={this.state.filteredPlaces}
+      //               setFocusOnMarker={this.setFocusOnMarker}
+      //               diveInDetails={this.diveInDetails}
+      //             />
+      //           </Well>
+      //           <hr />
+      //           <Details place={this.state.placeInFocus} />
+      //         </Col>
+      //       </Row>
+      //     </Grid>
+      //   </main>
+      // );
       return (
         <main>
           <Grid>
             <Row className="show-grid">
-              <Col xs={12} sm={3}>
+              <PageHeader className="header">
+                Neighborhood
+                <small> a demo project</small>
+              </PageHeader>
+              <Navbar /* fixedTop={true} */>
+                {/* <Navbar.Header> */}
+                {/* <Navbar.Brand>
+                    <a href="#home">Brand</a>
+                    paperino
+                  </Navbar.Brand> */}
+                {/* <Navbar.Toggle /> */}
+                {/* </Navbar.Header> */}
+                {/* <Navbar.Collapse> */}
+                <Navbar.Form /* pullLeft */>
+                  <FormGroup>
+                    {/* <FormControl type="text" placeholder="filter" /> */}
+                    <DebounceInput
+                      element={FormControl}
+                      minLength={1}
+                      debounceTimeout={750}
+                      onChange={this.search}
+                      placeholder={"search for a Place"}
+                    />
+                  </FormGroup>
+                  {/* <Button type="submit">Submit</Button> */}
+                </Navbar.Form>
+                {/* </Navbar.Collapse> */}
+              </Navbar>
+
+              <Autocomplete
+                getItemValue={el => el.label}
+                // items={[
+                //   { label: "apple" },
+                //   { label: "banana" },
+                //   { label: "pear" }
+                // ]}
+                items={this.state.filteredPlaces.map(el => {
+                  return { label: el.name };
+                })}
+                renderItem={(item, isHighlighted) => (
+                  <div
+                    style={{
+                      background: isHighlighted ? "lightgray" : "white"
+                    }}
+                  >
+                    {item.label}
+                  </div>
+                )}
+                value={"placeholder"}
+                // onChange={e => (value = e.target.value)}
+                // onSelect={val => (value = val)}
+              />
+              <DropList
+                places={this.state.filteredPlaces}
+                search={this.search}
+                setFocusOnMarker={this.setFocusOnMarker}
+                diveInDetails={this.diveInDetails}
+              />
+              {/* <Col xs={2} sm={3}>
                 <Aside
                   places={this.state.filteredPlaces}
                   search={this.search}
@@ -242,23 +352,22 @@ class Main extends Component {
                   // diveInDetails={this.diveInDetails}
                   diveInDetails={this.diveInDetails}
                 />
-              </Col>
-              <Col xs={12} sm={9}>
-                <PageHeader className="header">
-                  Neighborhood
-                  <small> a demo project</small>
-                </PageHeader>
-                <hr />
-                {/* <Button onClick={this.testApi}>test the API</Button> */}
-                <Well>
-                  <MyMap
-                    places={this.state.filteredPlaces}
-                    setFocusOnMarker={this.setFocusOnMarker}
-                    diveInDetails={this.diveInDetails}
-                  />
-                </Well>
-                <hr />
-                <Details place={this.state.placeInFocus} />
+              </Col> */}
+              <Col xs={12} sm={12}>
+                <Modal
+                  isModalShowed={this.state.isModalShowed}
+                  closeModal={this.closeModal}
+                  place={this.state.placeInFocus}
+                />
+                <div id="test">paperino</div>
+                <MyMap
+                  places={this.state.filteredPlaces}
+                  setFocusOnMarker={this.setFocusOnMarker}
+                  diveInDetails={this.diveInDetails}
+                />
+
+                {/* <hr />
+                <Details place={this.state.placeInFocus} /> */}
               </Col>
             </Row>
           </Grid>

@@ -7,6 +7,9 @@ import {
   Marker,
   InfoWindow
 } from "react-google-maps";
+import { Modal, ModalFooter, ModalBody, Button } from "react-bootstrap";
+
+import style from "./style2.json";
 
 const MyMapComponent = compose(
   withProps({
@@ -14,7 +17,7 @@ const MyMapComponent = compose(
       "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCnFVAyZgmwJeECuz5mpLxfEsqQPYMzOSo&v=3",
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: (
-      <div /* className="test" */ style={{ height: `400px` }} />
+      <div id='map' style={{ height: `400px` }} />
     ),
     mapElement: <div style={{ height: `100%` }} />
   }),
@@ -27,6 +30,10 @@ const MyMapComponent = compose(
     }}
     defaultZoom={10}
     defaultCenter={props.centerPos}
+    defaultOptions={{
+      styles: style,
+      mapTypeControl: false
+    }}
   >
     {props.places.map(element => {
       let markerId = element.id;

@@ -23,12 +23,31 @@
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .filter {
   background-color: #222;
   height: 150px;
   padding: 20px;
+}
+
+.pippo {
+  margin: 0px 5px;
+  /* border: 0; */
+  background-color: #fff;
+}
+.custom-modal {
+  /* position: inherit; */
+  /* position: absolute; */
+  /* top: calc(0px + 10px); */
+  /* right: calc(0px + 50px); */
+  /* calc here also */
+  /* width: 80%;  */
+  color: red;
 }
