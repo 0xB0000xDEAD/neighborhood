@@ -45,11 +45,13 @@ class Main extends Component {
     let temp = []; // to set as state when all the data is fetched
 
     let loadData = () => {
-      let dummy = {
+      //park in new york (fake API call)
+      let parks = {
         url: `http://localhost:${port}/searchResponse`,
 
         method: "GET"
       };
+      // (real API call)(real API call)
       let option = {
         url: "https://api.foursquare.com/v2/venues/search",
         method: "GET",
@@ -62,7 +64,8 @@ class Main extends Component {
           limit: 15
         }
       };
-      let search = {
+      // los ankeles skate park (real API call)
+      let skatePark = {
         url: "https://api.foursquare.com/v2/venues/search",
         method: "GET",
         qs: {
@@ -83,14 +86,12 @@ class Main extends Component {
       //   console.log(data.json());
       // });
 
-      callAPI(search).then(output => {
+      callAPI(parks).then(output => {
         let responseJ = JSON.parse(output);
-        // console.log(responseJ);
-
-        let data = responseJ.response.venues; // place array
+        let places = responseJ.response.venues; // place array
 
         let imageProcess = Promise.all(
-          data.map(el => {
+          places.map(el => {
             let dummy = {
               url: `http://localhost:${port}/photoResponse`,
               method: "GET"
@@ -125,7 +126,7 @@ class Main extends Component {
               yield el;
             }
           }
-          for (const el of data) {
+          for (const el of places) {
             // console.log(el.url); // check if a attribute is present
 
             let tmp = {
