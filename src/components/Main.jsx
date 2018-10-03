@@ -29,10 +29,11 @@ import defaultPin from "../icons/baseline-place-24px_2.svg";
 import callAPI from "../utils/callApi";
 import Modal from "./Modal";
 import Autocomplete from "react-autocomplete";
+import Autosuggest from "./Autosuggest";
 
 class Main extends Component {
   state = {
-    locations: dummy.response.groups[0].items, // import from dump
+    // locations: dummy.response.groups[0].items, // import from /src/resource_dump
     places: [],
     filteredPlaces: [],
     // showDetails: false,
@@ -86,7 +87,7 @@ class Main extends Component {
       //   console.log(data.json());
       // });
 
-      callAPI(parks).then(output => {
+      callAPI(skatePark).then(output => {
         let responseJ = JSON.parse(output);
         let places = responseJ.response.venues; // place array
 
@@ -291,54 +292,7 @@ class Main extends Component {
                 Neighborhood
                 <small> a demo project</small>
               </PageHeader>
-              <Navbar /* fixedTop={true} */>
-                {/* <Navbar.Header> */}
-                {/* <Navbar.Brand>
-                    <a href="#home">Brand</a>
-                    paperino
-                  </Navbar.Brand> */}
-                {/* <Navbar.Toggle /> */}
-                {/* </Navbar.Header> */}
-                {/* <Navbar.Collapse> */}
-                <Navbar.Form /* pullLeft */>
-                  <FormGroup>
-                    {/* <FormControl type="text" placeholder="filter" /> */}
-                    <DebounceInput
-                      element={FormControl}
-                      minLength={1}
-                      debounceTimeout={750}
-                      onChange={this.search}
-                      placeholder={"search for a Place"}
-                    />
-                  </FormGroup>
-                  {/* <Button type="submit">Submit</Button> */}
-                </Navbar.Form>
-                {/* </Navbar.Collapse> */}
-              </Navbar>
-
-              <Autocomplete
-                getItemValue={el => el.label}
-                // items={[
-                //   { label: "apple" },
-                //   { label: "banana" },
-                //   { label: "pear" }
-                // ]}
-                items={this.state.filteredPlaces.map(el => {
-                  return { label: el.name };
-                })}
-                renderItem={(item, isHighlighted) => (
-                  <div
-                    style={{
-                      background: isHighlighted ? "lightgray" : "white"
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                )}
-                value={"placeholder"}
-                // onChange={e => (value = e.target.value)}
-                // onSelect={val => (value = val)}
-              />
+              <Autosuggest places={this.state.places} />
               <DropList
                 places={this.state.filteredPlaces}
                 search={this.search}
