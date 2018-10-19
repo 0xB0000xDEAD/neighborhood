@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap-theme.css';
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
 
+import "./style/eduardo.scss"
+
 import "./App.css";
 
 import Main from "./components/Main";

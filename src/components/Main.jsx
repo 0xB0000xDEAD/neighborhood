@@ -240,7 +240,7 @@ class Main extends Component {
     }, []);
     this.setState({ filteredPlaces: tmp });
     this.setState({ placeInFocus: target });
-    this.setState({ isModalShowed: true });
+    // this.setState({ isModalShowed: true });
   };
   closeModal = () => {
     this.setState({

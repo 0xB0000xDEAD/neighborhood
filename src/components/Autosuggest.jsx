@@ -12,24 +12,32 @@ export default class Test extends React.Component {
     value: "",
     suggestions: []
   };
-  componentDidMount() {}
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
   getSuggestions = value => {
-    const inputValue = value.trim().toLowerCase();
+    // const inputValue = value.trim().toLowerCase();
+    const inputValue = value;
+
     const inputLength = inputValue.length;
 
-    /* console.log(
-      this.props.places.filter(
-        place => place.name.toLowerCase().slice(0, inputLength) === inputValue
-      )
-    ); */
-
-    return inputLength === 0
+    /*   return inputLength === 0
       ? []
       : this.props.places.filter(
           place => place.name.toLowerCase().slice(0, inputLength) === inputValue
-        );
+        ); */
+
+    /* this.props.places.forEach(element => {
+      console.log(element.location);
+    }); */
+
+    return inputLength === 0
+      ? []
+      : this.props.places.filter(place => {
+          console.log(place.name, " --->",  place.location.postalCode);
+          return place.location.postalCode !== undefined
+            ? place.location.postalCode.slice(0, inputLength) === value
+            : true;
+        });
   };
   // When suggestion is clicked, Autosuggest needs to populate the input
   // based on the clicked suggestion. Teach Autosuggest how to calculate the
@@ -66,7 +74,7 @@ export default class Test extends React.Component {
 
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
-      placeholder: "Type to filter the list",
+      placeholder: "Type a Postcode to filter",
       value,
       onChange: this.onChange
     };
