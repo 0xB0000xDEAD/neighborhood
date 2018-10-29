@@ -1,39 +1,19 @@
 import React, { Component } from "react";
+import { PageHeader, Grid, Row, Col } from "react-bootstrap";
 
-import port from "../config";
-
-// import "../style/Main.css";
-import { PageHeader } from "react-bootstrap";
-import { Grid, Row, Col, Well, Button } from "react-bootstrap";
-import DebounceInput from "react-debounce-input";
-
-import {
-  Navbar,
-  NavItem,
-  NavDropdown,
-  NavbarBrand,
-  Nav,
-  MenuItem,
-  FormGroup,
-  FormControl
-} from "react-bootstrap";
+import * as endpoints from "../utils/endpoint";
 
 import Aside from "./Aside";
-
-import dummy from "../response_dump";
 import MyMap from "./MyMap";
 import Details from "./Details";
-import DropList from "./DropList";
+import Details2 from "./Details2"
 import focusPin from "../icons/baseline-place-24px_1.svg";
 import defaultPin from "../icons/baseline-place-24px_2.svg";
 import callAPI from "../utils/callApi";
-import Modal from "./Modal";
-import Autocomplete from "react-autocomplete";
-import Autosuggest from "./Autosuggest";
+// import Modal from "./Modal";
 
 class Main extends Component {
   state = {
-    // locations: dummy.response.groups[0].items, // import from /src/resource_dump
     places: [],
     filteredPlaces: [],
     // showDetails: false,
@@ -41,79 +21,24 @@ class Main extends Component {
     isModalShowed: false,
     dataLoaded: false
   };
-
-  componentDidMount() {
+  loadData = () => {
     let temp = []; // to set as state when all the data is fetched
 
-    let loadData = () => {
-      //park in new york (fake API call)
-      let parks = {
-        url: `http://localhost:${port}/searchResponse`,
+    // alternative
 
-        method: "GET"
-      };
-      // (real API call)(real API call)
-      let option = {
-        url: "https://api.foursquare.com/v2/venues/search",
-        method: "GET",
-        qs: {
-          client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
-          client_secret: "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
-          ll: "40.7243,-74.0018",
-          query: "lake",
-          v: "20180323",
-          limit: 15
-        }
-      };
-      // los ankeles skate park (real API call)
-      let skatePark = {
-        url: "https://api.foursquare.com/v2/venues/search",
-        method: "GET",
-        qs: {
-          client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
-          client_secret: "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
-          near: "los angeles",
-          // query: "lake",
-          categoryId: "4bf58dd8d48988d167941735",
-          // radius: "50000",
-          v: "20180323",
-          limit: 10
-        }
-      };
-
-      // alternative
-
-      // fetch("http://localhost:3004/searchResponse").then(function(data) {
-      //   console.log(data.json());
-      // });
-
-      callAPI(skatePark).then(output => {
+    // fetch("http://localhost:3004/searchResponse").then(function(data) {
+    //   console.log(data.json());
+    // });
+    
+    callAPI(endpoints.apiEndpoint2.search)
+      .then(output => {
         let responseJ = JSON.parse(output);
         let places = responseJ.response.venues; // place array
 
         let imageProcess = Promise.all(
           places.map(el => {
-            let dummy = {
-              url: `http://localhost:${port}/photoResponse`,
-              method: "GET"
-            };
-
-            let details = {
-              url: `https://api.foursquare.com/v2/venues/${el.id}`,
-              method: "GET",
-              qs: {
-                client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
-                client_secret:
-                  "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
-                v: "20180323",
-                limit: 1
-              }
-            };
-            return callAPI(dummy).then(function(output) {
-              // console.log(output);
-
+            return callAPI(endpoints.apiEndpoint2.photo).then(function(output) {
               let response = JSON.parse(output);
-
               return `${
                 response.response.photos.items[0].prefix
               }500x300${response.response.photos.items[0].suffix}`;
@@ -148,57 +73,34 @@ class Main extends Component {
           this.setState({ filteredPlaces: temp });
           this.setState({ dataLoaded: true });
         });
+      })
+      .catch(err => {
+        // console.log("something went south :_(");
+        // console.log(err);
+        this.setState({ dataLoaded: false });
       });
-    };
-    loadData();
+  };
 
-    let loadStoredData = () => {
-      let places = [];
-      for (const el of this.state.locations) {
-        // console.log(response.next();
-
-        let tmp = {
-          id: el.venue.id,
-          name: el.venue.name,
-          location: el.venue.location,
-          type: el.venue.categories[0].name,
-          description: el.venue.description,
-          icon: undefined,
-          isFocusOn: false,
-          photos: undefined
-        };
-        places.push(tmp);
-      }
-
-      this.setState({ places: places });
-      this.setState({ filteredPlaces: places });
-      this.setState({ dataLoaded: true });
-    };
-    // loadStoredData();
+  componentDidMount() {
+    this.loadData();
+    
   }
 
-  testApi() {
-    let option = {
-      url: `https://api.foursquare.com/v2/venues/4b7fe3cbf964a520b94230e3/photos`,
-      method: "GET",
-      qs: {
-        client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
-        client_secret: "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
-        v: "20180323",
-        limit: 3
-      }
-    };
-    // console.log(callAPI(option));
-  }
-  search = event => {
+  filterPlaces = event => {
     let query = event.target.value;
     console.log(`query is ${query}`);
     if (query) {
       let results = this.state.places.filter(el => {
-        return el.name.toLowerCase() === query.toString().trim();
+        // console.log(el.name, " --->", el.location.postalCode);
+        console.log(query.inputLength);
+
+        return el.location.postalCode !== undefined
+          ? el.location.postalCode.slice(0, query.length) === query
+          : false;
       });
       if (results.length > 0) {
         this.setState({ filteredPlaces: results });
+        console.log(results);
       } else {
         this.setState({ filteredPlaces: [] });
       }
@@ -215,7 +117,6 @@ class Main extends Component {
       } else {
         el.icon = defaultPin;
         el.areWeHovering = false;
-
         store.push(el);
       }
       return store;
@@ -223,24 +124,17 @@ class Main extends Component {
     this.setState({ filteredPlaces: tmp });
   };
 
-  // called from list or marker
-
   diveInDetails = (id, event) => {
-    let target;
-    let tmp = this.state.filteredPlaces.reduce((store, el) => {
-      if (el.id === id) {
-        target = el;
-        el.isFocusOn = true;
-        store.push(el);
-      } else {
-        el.isFocusOn = false;
-        store.push(el);
-      }
-      return store;
-    }, []);
-    this.setState({ filteredPlaces: tmp });
-    this.setState({ placeInFocus: target });
-    // this.setState({ isModalShowed: true });
+    let focusTarget = this.state.filteredPlaces.find(el => {
+      return el.id === id;
+    });
+    callAPI(endpoints.apiEndpoint2.detail(id)).then(response => {
+      let parsed = JSON.parse(response);
+      focusTarget.description = parsed.response.venue.description;
+      focusTarget.address = parsed.response.venue.location.formattedAddress;
+      focusTarget.phone = parsed.response.venue.contact.phone;
+      this.setState({ placeInFocus: focusTarget });
+    });
   };
   closeModal = () => {
     this.setState({
@@ -249,92 +143,66 @@ class Main extends Component {
   };
 
   render() {
-    // console.log(this.state);
-    if (this.state.dataLoaded) {
-      // return (
-      //   <main>
-      //     <Grid>
-      //       <Row className="show-grid">
-      //         <Col xs={12} sm={3}>
-      //           <Aside
-      //             places={this.state.filteredPlaces}
-      //             search={this.search}
-      //             setFocusOnMarker={this.setFocusOnMarker}
-      //             diveInDetails={this.diveInDetails}
-      //           />
-      //         </Col>
-      //         <Col xs={12} sm={9}>
-      //           <PageHeader className="header">
-      //             Neighborhood
-      //             <small> a demo project</small>
-      //           </PageHeader>
-      //           <hr />
-      //           {/* <Button onClick={this.testApi}>test the API</Button> */}
-      //           <Well>
-      //             <MyMap
-      //               places={this.state.filteredPlaces}
-      //               setFocusOnMarker={this.setFocusOnMarker}
-      //               diveInDetails={this.diveInDetails}
-      //             />
-      //           </Well>
-      //           <hr />
-      //           <Details place={this.state.placeInFocus} />
-      //         </Col>
-      //       </Row>
-      //     </Grid>
-      //   </main>
-      // );
-      return (
-        <main>
-          <Grid>
-            <Row className="show-grid">
-              <PageHeader className="header">
-                Neighborhood
-                <small> a demo project</small>
-              </PageHeader>
+    return (
+      <main>
+        <Grid>
+          <Row>
+            <PageHeader /* className="header" */>
+              Neighborhood
+              <small> a demo project</small>
+            </PageHeader>
+          </Row>
+          {/* <Row>
               <Autosuggest places={this.state.places} />
-              <DropList
+            </Row> */}
+          <Row>
+            <Col sm={12} md={4}>
+              <Aside
                 places={this.state.filteredPlaces}
-                search={this.search}
+                search={this.filterPlaces}
                 setFocusOnMarker={this.setFocusOnMarker}
                 diveInDetails={this.diveInDetails}
+                dataLoaded={this.state.dataLoaded}
               />
-              {/* <Col xs={2} sm={3}>
-                <Aside
-                  places={this.state.filteredPlaces}
-                  search={this.search}
-                  setFocusOnMarker={this.setFocusOnMarker}
-                  // diveInDetails={this.diveInDetails}
-                  diveInDetails={this.diveInDetails}
-                />
-              </Col> */}
-              <Col xs={12} sm={12}>
-                <Modal
-                  isModalShowed={this.state.isModalShowed}
-                  closeModal={this.closeModal}
-                  place={this.state.placeInFocus}
-                />
-                <div id="test">paperino</div>
+            </Col>
+            <Col sm={12} md={8}>
+              <Row>
                 <MyMap
                   places={this.state.filteredPlaces}
                   setFocusOnMarker={this.setFocusOnMarker}
                   diveInDetails={this.diveInDetails}
+                  dataLoaded={this.state.dataLoaded}
                 />
+              </Row>
+              <Row>
+                {/* <Details place={this.state.placeInFocus} /> */}
+                <Details2 place={this.state.placeInFocus} />
 
-                {/* <hr />
+              </Row>
+            </Col>
+
+            {/* <Col xs={12} sm={6} mdHidden={true}>
+                <DropList
+                  places={this.state.filteredPlaces}
+                  search={this.search}
+                  setFocusOnMarker={this.setFocusOnMarker}
+                  diveInDetails={this.diveInDetails}
+                />
+              </Col> */}
+            {/* <Col xs={12} sm={12} md={8} mdOffset={4}>
+              <Modal
+                isModalShowed={this.state.isModalShowed}
+                closeModal={this.closeModal}
+                place={this.state.placeInFocus}
+              />
+
+            </Col> */}
+            {/* <hr />
                 <Details place={this.state.placeInFocus} /> */}
-              </Col>
-            </Row>
-          </Grid>
-        </main>
-      );
-    } else {
-      return (
-        <div>
-          <span>loading... please wait</span>
-        </div>
-      );
-    }
+          </Row>
+        </Grid>
+      </main>
+    );
   }
 }
 

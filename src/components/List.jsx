@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 
 class List extends Component {
-  
   componentDidMount() {}
 
   handleClick = (id, e) => {
@@ -16,8 +15,6 @@ class List extends Component {
     // console.log(e);
   };
   render() {
-    // console.log(this.props);
-
     let listGroup = this.props.places.map(el => {
       return (
         <ListGroupItem
@@ -31,10 +28,29 @@ class List extends Component {
         </ListGroupItem>
       );
     });
+    let noInfo = this.props.places.filter(el => {
+      return el.location.postalCode === undefined;
+    });
 
     return (
       <nav>
         <ListGroup>{listGroup}</ListGroup>
+        <span> no POstalCode</span>
+        <ListGroup>
+          {noInfo.map(el => {
+            return (
+              <ListGroupItem
+                active={el.areWeHovering}
+                key={el.id}
+                header={el.name}
+                onClick={e => this.handleClick(el.id, e)}
+                onMouseOver={e => this.handleMouseOver(el.id, e)}
+              >
+                {el.location.formattedAddress}
+              </ListGroupItem>
+            );
+          })}
+        </ListGroup>
       </nav>
     );
   }

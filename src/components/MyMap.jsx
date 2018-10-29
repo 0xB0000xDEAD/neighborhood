@@ -7,18 +7,15 @@ import {
   Marker,
   InfoWindow
 } from "react-google-maps";
-import { Modal, ModalFooter, ModalBody, Button } from "react-bootstrap";
 
-import style from "./style2.json";
+import style from "./style.json";
 
 const MyMapComponent = compose(
   withProps({
     googleMapURL:
       "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCnFVAyZgmwJeECuz5mpLxfEsqQPYMzOSo&v=3",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: (
-      <div id='map' style={{ height: `400px` }} />
-    ),
+    containerElement: <div id="map" style={{ height: `400px` }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
   withScriptjs,
@@ -113,13 +110,17 @@ class MyMap extends React.PureComponent {
 
   render() {
     return (
-      <MyMapComponent
-        onMarkerClick={this.handleMarkerClick}
-        onMouseOver={this.handleMarkerOver}
-        places={this.props.places}
-        centerPos={this.state.position}
-        isMarkerShown={this.state.isMarkerShown}
-      />
+      <div>
+        {this.props.dataLoaded && (
+          <MyMapComponent
+            onMarkerClick={this.handleMarkerClick}
+            onMouseOver={this.handleMarkerOver}
+            places={this.props.places}
+            centerPos={this.state.position}
+            isMarkerShown={this.state.isMarkerShown}
+          />
+        )}
+      </div>
     );
   }
 }

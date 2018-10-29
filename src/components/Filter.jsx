@@ -11,28 +11,29 @@ import {
 const Filter = props => {
   Filter.propTypes = {};
   return (
-    <div className="filter">
+    <div>
       <form>
         <FormGroup
           controlId="formBasicText"
           // validationState={this.getValidationState()}
         >
-          <ControlLabel>this is a ControlLabel</ControlLabel>
-          {/* <FormControl
+          <ControlLabel>Filter the list</ControlLabel>
+          <FormControl
             type="text"
-            // value={this.state.value}
-            placeholder="Enter text"
-            // onChange={this.handleChange}
-          /> */}
-          <DebounceInput
+            // value={"value"}
+            placeholder="type 91 for example"
+            onChange={props.search}
+            bsSize={"large"}
+          />
+          {/* <DebounceInput
             element="input"
             minLength={2}
             debounceTimeout={750}
             onChange={props.search}
             placeholder={"search for a Place"}
-          />
+          /> */}
           <FormControl.Feedback />
-          <HelpBlock>this is a HelpBlock</HelpBlock>
+          <HelpBlock>enter a Postcode</HelpBlock>
         </FormGroup>
       </form>
     </div>
