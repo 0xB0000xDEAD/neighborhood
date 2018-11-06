@@ -2,7 +2,7 @@ import { callForReal, port } from "../config";
 // import { obj } from "../config";
 let searchParams, photoParams, detailParams;
 switch (callForReal) {
-  case false:
+  case true:
     searchParams = {
       url: "https://api.foursquare.com/v2/venues/search",
       method: "GET",
@@ -17,6 +17,7 @@ switch (callForReal) {
         limit: 10
       }
     };
+    //TODO dump a real response for this endpoint
     photoParams = {
       url: `http://localhost:${port}/photoResponse`,
       method: "GET"
@@ -33,7 +34,7 @@ switch (callForReal) {
       };
     };
     break;
-  case true:
+  case false:
     searchParams = {
       url: `http://localhost:${port}/searchResponse`,
       method: "GET"

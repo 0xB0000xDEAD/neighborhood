@@ -11,14 +11,12 @@ class List extends Component {
   handleMouseOver = (id, e) => {
     // console.log(`the id of the element is: ${id}`);
     this.props.setFocusOnMarker(id, e);
-    // e.target.value.setAttribute("class", "listElementHover")
-    // console.log(e);
   };
   render() {
     let listGroup = this.props.places.map(el => {
       return (
         <ListGroupItem
-          active={el.areWeHovering}
+          active={el.isSelected}
           key={el.id}
           header={el.name}
           onClick={e => this.handleClick(el.id, e)}
@@ -36,7 +34,7 @@ class List extends Component {
       <nav>
         <ListGroup>{listGroup}</ListGroup>
         <span> no POstalCode</span>
-        <ListGroup>
+        {/* <ListGroup>
           {noInfo.map(el => {
             return (
               <ListGroupItem
@@ -50,7 +48,7 @@ class List extends Component {
               </ListGroupItem>
             );
           })}
-        </ListGroup>
+        </ListGroup> */}
       </nav>
     );
   }

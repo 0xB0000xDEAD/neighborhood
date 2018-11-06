@@ -6,8 +6,9 @@ import * as endpoints from "../utils/endpoint";
 import Aside from "./Aside";
 import MyMap from "./MyMap";
 import Details from "./Details";
-import Details2 from "./Details2"
+import Details2 from "./Details2";
 import focusPin from "../icons/baseline-place-24px_1.svg";
+import clickedPin from "../icons/baseline-place-24px_3.svg";
 import defaultPin from "../icons/baseline-place-24px_2.svg";
 import callAPI from "../utils/callApi";
 // import Modal from "./Modal";
@@ -29,7 +30,7 @@ class Main extends Component {
     // fetch("http://localhost:3004/searchResponse").then(function(data) {
     //   console.log(data.json());
     // });
-    
+
     callAPI(endpoints.apiEndpoint2.search)
       .then(output => {
         let responseJ = JSON.parse(output);
@@ -83,7 +84,6 @@ class Main extends Component {
 
   componentDidMount() {
     this.loadData();
-    
   }
 
   filterPlaces = event => {
@@ -92,8 +92,6 @@ class Main extends Component {
     if (query) {
       let results = this.state.places.filter(el => {
         // console.log(el.name, " --->", el.location.postalCode);
-        console.log(query.inputLength);
-
         return el.location.postalCode !== undefined
           ? el.location.postalCode.slice(0, query.length) === query
           : false;
@@ -110,36 +108,46 @@ class Main extends Component {
   };
   setFocusOnMarker = (id, event) => {
     let tmp = this.state.filteredPlaces.reduce((store, el) => {
-      if (el.id === id) {
-        el.icon = focusPin;
-        el.areWeHovering = true;
+      // original
+      if (el.icon === clickedPin) {
         store.push(el);
       } else {
-        el.icon = defaultPin;
-        el.areWeHovering = false;
+        if (el.id === id) {
+          el.icon = focusPin;
+        } else {
+          el.icon = defaultPin;
+        }
         store.push(el);
       }
       return store;
     }, []);
-    this.setState({ filteredPlaces: tmp });
+    this.setState({ filteredPlaces: tmp }); // async calling
   };
 
   diveInDetails = (id, event) => {
-    let focusTarget = this.state.filteredPlaces.find(el => {
-      return el.id === id;
-    });
-    callAPI(endpoints.apiEndpoint2.detail(id)).then(response => {
-      let parsed = JSON.parse(response);
-      focusTarget.description = parsed.response.venue.description;
-      focusTarget.address = parsed.response.venue.location.formattedAddress;
-      focusTarget.phone = parsed.response.venue.contact.phone;
-      this.setState({ placeInFocus: focusTarget });
-    });
-  };
-  closeModal = () => {
-    this.setState({
-      isModalShowed: false
-    });
+    let clickedElement;
+    let tmp = this.state.filteredPlaces.reduce((store, el) => {
+      if (el.id === id) {
+        clickedElement = el;
+        clickedElement.icon = clickedPin;
+        clickedElement.isSelected = true;
+        // api call
+        callAPI(endpoints.apiEndpoint2.detail(id)).then(response => {
+          let parsed = JSON.parse(response);
+          clickedElement.description = parsed.response.venue.description;
+          clickedElement.address =
+            parsed.response.venue.location.formattedAddress;
+          clickedElement.phone = parsed.response.venue.contact.phone;
+          this.setState({ placeInFocus: clickedElement });
+        });
+      } else {
+        el.isSelected = false;
+        el.icon = defaultPin;
+      }
+      store.push(el);
+      return store;
+    }, []);
+    this.setState({ filteredPlaces: tmp });
   };
 
   render() {
@@ -171,13 +179,13 @@ class Main extends Component {
                   places={this.state.filteredPlaces}
                   setFocusOnMarker={this.setFocusOnMarker}
                   diveInDetails={this.diveInDetails}
+                  placeInFocus={this.state.placeInFocus}
                   dataLoaded={this.state.dataLoaded}
                 />
               </Row>
               <Row>
                 {/* <Details place={this.state.placeInFocus} /> */}
                 <Details2 place={this.state.placeInFocus} />
-
               </Row>
             </Col>
 

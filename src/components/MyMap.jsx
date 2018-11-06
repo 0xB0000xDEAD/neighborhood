@@ -26,11 +26,12 @@ const MyMapComponent = compose(
       this.map = ref;
     }}
     defaultZoom={10}
-    defaultCenter={props.centerPos}
+    // defaultCenter={props.centerPos}
     defaultOptions={{
       styles: style,
       mapTypeControl: false
     }}
+    center = {props.centerPos}
   >
     {props.places.map(element => {
       let markerId = element.id;
@@ -75,24 +76,46 @@ const MyMapComponent = compose(
 class MyMap extends React.PureComponent {
   state = {
     isMarkerShown: false,
-    position: {}
+    position: {},
+    clickedMarker: this.props.placeInFocus
   };
 
   componentDidMount() {
     this.delayedShowMarker();
   }
+
+  // static getDerivedStateFromProps(nextProps, prevState) {
+  //   if (nextProps.places.length > 0) {
+  //     let pos = {};
+  //     pos.lat = nextProps.places[0].location.lat;
+  //     pos.lng = nextProps.places[0].location.lng;
+  //     return {
+  //       position: pos
+  //     };
+  //   } else {
+  //     return null;
+  //   }
+  // }
+
   static getDerivedStateFromProps(nextProps, prevState) {
+    let pos = {};
     if (nextProps.places.length > 0) {
-      let pos = {};
       pos.lat = nextProps.places[0].location.lat;
       pos.lng = nextProps.places[0].location.lng;
-      return {
-        position: pos
-      };
+      if (nextProps.placeInFocus === undefined) {
+        // console.log("no placeInFocus defined");
+        return { position: pos };
+      } else {
+        // console.log(nextProps.placeInFocus.location);
+        pos.lat = nextProps.placeInFocus.location.lat;
+        pos.lng = nextProps.placeInFocus.location.lng;
+        return { position: pos };
+      }
     } else {
       return null;
     }
   }
+
   delayedShowMarker = () => {
     setTimeout(() => {
       this.setState({ isMarkerShown: true });
@@ -109,6 +132,8 @@ class MyMap extends React.PureComponent {
   };
 
   render() {
+    console.log();
+
     return (
       <div>
         {this.props.dataLoaded && (
@@ -118,6 +143,7 @@ class MyMap extends React.PureComponent {
             places={this.props.places}
             centerPos={this.state.position}
             isMarkerShown={this.state.isMarkerShown}
+            placeInFocus={this.props.placeInFocus}
           />
         )}
       </div>
