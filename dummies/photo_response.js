@@ -1,38 +1,38 @@
-let photo = {
+let response = {
   meta: {
     code: 200,
-    requestId: "5997070d6a60717704801060"
+    requestId: "5be40d6af594df6737a67878"
   },
   response: {
     photos: {
       count: 1,
       items: [
         {
-          id: "51e4151c498e60b5d17bc721",
-          createdAt: 1373902108,
+          id: "506ca65ae4b03e31eaf04bb0",
+          createdAt: 1349297754,
           source: {
             name: "Instagram",
             url: "http://instagram.com"
           },
-          prefix: "https://igx.4sqi.net/img/general/",
-          suffix: "/1022386_wEd7VXnWzp5lajvRLtAPunoiufDSIq8PMEtEuIH2Tzg.jpg",
+          prefix: "https://fastly.4sqi.net/img/general/",
+          suffix: "/7722771_DobGmNjhAmIPkCDcgcH3KXy9R6I133xBuk7OVt6XBqE.jpg",
           width: 612,
           height: 612,
           user: {
-            id: "123456",
-            firstName: "John",
-            lastName: "Doe",
+            id: "7722771",
+            firstName: "Judah",
+            lastName: "C",
             gender: "male",
             photo: {
-              prefix: "https://igx.4sqi.net/img/user/",
-              suffix: "/YXNQ5O4TLYSNHMKY.jpg"
+              prefix: "https://fastly.4sqi.net/img/user/",
+              suffix: "/7722771-SKFXUB1POYNBEXHN.jpg"
             }
           },
           checkin: {
-            id: "51e4151b498ea66547febfaf",
-            createdAt: 1373902107,
+            id: "506ca65ae4b09eec6b6d372e",
+            createdAt: 1349297754,
             type: "checkin",
-            timeZoneOffset: -240
+            timeZoneOffset: -420
           },
           visibility: "public"
         }
@@ -45,7 +45,7 @@ let photo = {
 // export default photo;  // not working, o ES6 support in json-server
 
 let data = {
-  photoResponse: photo
+  photoResponse: response
 };
 
 module.exports = data;

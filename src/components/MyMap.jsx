@@ -26,12 +26,11 @@ const MyMapComponent = compose(
       this.map = ref;
     }}
     defaultZoom={10}
-    // defaultCenter={props.centerPos}
     defaultOptions={{
       styles: style,
       mapTypeControl: false
     }}
-    center = {props.centerPos}
+    center={props.centerPos}
   >
     {props.places.map(element => {
       let markerId = element.id;
@@ -49,9 +48,6 @@ const MyMapComponent = compose(
             onMouseOver={e => {
               props.onMouseOver(markerId, e);
             }}
-            onMouseOut={e => {
-              props.onMouseOver(null, e);
-            }}
             onClick={e => {
               this.map.panTo({
                 lat: element.location.lat,
@@ -61,7 +57,7 @@ const MyMapComponent = compose(
             }}
             icon={element.icon}
           >
-            {element.isFocusOn && (
+            {element.isSelected && (
               <InfoWindow /* onCloseClick={props.onToggleOpen} */>
                 <p>{element.name}</p>
               </InfoWindow>
@@ -83,19 +79,6 @@ class MyMap extends React.PureComponent {
   componentDidMount() {
     this.delayedShowMarker();
   }
-
-  // static getDerivedStateFromProps(nextProps, prevState) {
-  //   if (nextProps.places.length > 0) {
-  //     let pos = {};
-  //     pos.lat = nextProps.places[0].location.lat;
-  //     pos.lng = nextProps.places[0].location.lng;
-  //     return {
-  //       position: pos
-  //     };
-  //   } else {
-  //     return null;
-  //   }
-  // }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     let pos = {};
@@ -127,7 +110,6 @@ class MyMap extends React.PureComponent {
   };
 
   handleMarkerOver = (id, e) => {
-    // console.log(e);
     this.props.setFocusOnMarker(id, e);
   };
 

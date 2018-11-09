@@ -2,7 +2,6 @@ import React from "react";
 import Spinner from "./Spinner";
 import Filter from "./Filter";
 import List from "./List";
-// import "../style/Aside.css";
 
 import {} from "react-bootstrap";
 const Aside = props => {

@@ -31,18 +31,7 @@
   }
 }
 
-.custom-modal {
-  /* position: inherit; */
-  /* position: absolute; */
-  /* top: calc(0px + 10px); */
-  /* right: calc(0px + 50px); */
-  /* calc here also */
-  /* width: 80%;  */
-  color: red;
-}
-
 img.bw {
   width: 100%;
-  filter: grayscale(100%);
-  border: 3px solid red;
+  /* filter: grayscale(100%); */
 }

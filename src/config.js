@@ -1,3 +1,5 @@
-export const callForReal = false;
-
-export const port = 4000;
+export const config = {
+  port: 4000,
+  callForReal: false,
+  swOnDev: false // turn on the Service Worker in dev mode
+};

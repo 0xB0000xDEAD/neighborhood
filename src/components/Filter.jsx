@@ -1,6 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { DebounceInput } from "react-debounce-input";
+
 import {
   FormGroup,
   FormControl,
@@ -25,13 +24,6 @@ const Filter = props => {
             onChange={props.search}
             bsSize={"large"}
           />
-          {/* <DebounceInput
-            element="input"
-            minLength={2}
-            debounceTimeout={750}
-            onChange={props.search}
-            placeholder={"search for a Place"}
-          /> */}
           <FormControl.Feedback />
           <HelpBlock>enter a Postcode</HelpBlock>
         </FormGroup>

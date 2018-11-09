@@ -6,27 +6,22 @@ import * as endpoints from "../utils/endpoint";
 import Aside from "./Aside";
 import MyMap from "./MyMap";
 import Details from "./Details";
-import Details2 from "./Details2";
 import focusPin from "../icons/baseline-place-24px_1.svg";
 import clickedPin from "../icons/baseline-place-24px_3.svg";
 import defaultPin from "../icons/baseline-place-24px_2.svg";
 import callAPI from "../utils/callApi";
-// import Modal from "./Modal";
 
 class Main extends Component {
   state = {
     places: [],
     filteredPlaces: [],
-    // showDetails: false,
-    placeInFocus: undefined, // place to show the details
-    isModalShowed: false,
+    placeInFocus: undefined,
     dataLoaded: false
   };
   loadData = () => {
-    let temp = []; // to set as state when all the data is fetched
+    let temp = []; //When  the data is fetched goes here
 
     // alternative
-
     // fetch("http://localhost:3004/searchResponse").then(function(data) {
     //   console.log(data.json());
     // });
@@ -36,6 +31,7 @@ class Main extends Component {
         let responseJ = JSON.parse(output);
         let places = responseJ.response.venues; // place array
 
+        //get image from api
         let imageProcess = Promise.all(
           places.map(el => {
             return callAPI(endpoints.apiEndpoint2.photo).then(function(output) {
@@ -66,6 +62,7 @@ class Main extends Component {
               icon: defaultPin,
               isFocusOn: false,
               areWeHovering: false,
+              // use of iterator to add the photos
               photos: gen().next().value
             };
             temp.push(tmp);
@@ -88,7 +85,7 @@ class Main extends Component {
 
   filterPlaces = event => {
     let query = event.target.value;
-    console.log(`query is ${query}`);
+    // console.log(`query is ${query}`);
     if (query) {
       let results = this.state.places.filter(el => {
         // console.log(el.name, " --->", el.location.postalCode);
@@ -96,6 +93,7 @@ class Main extends Component {
           ? el.location.postalCode.slice(0, query.length) === query
           : false;
       });
+
       if (results.length > 0) {
         this.setState({ filteredPlaces: results });
         console.log(results);
@@ -108,7 +106,6 @@ class Main extends Component {
   };
   setFocusOnMarker = (id, event) => {
     let tmp = this.state.filteredPlaces.reduce((store, el) => {
-      // original
       if (el.icon === clickedPin) {
         store.push(el);
       } else {
@@ -121,7 +118,7 @@ class Main extends Component {
       }
       return store;
     }, []);
-    this.setState({ filteredPlaces: tmp }); // async calling
+    this.setState({ filteredPlaces: tmp });
   };
 
   diveInDetails = (id, event) => {
@@ -131,7 +128,7 @@ class Main extends Component {
         clickedElement = el;
         clickedElement.icon = clickedPin;
         clickedElement.isSelected = true;
-        // api call
+        // api call to retrive details for the place in focus
         callAPI(endpoints.apiEndpoint2.detail(id)).then(response => {
           let parsed = JSON.parse(response);
           clickedElement.description = parsed.response.venue.description;
@@ -155,14 +152,12 @@ class Main extends Component {
       <main>
         <Grid>
           <Row>
-            <PageHeader /* className="header" */>
+            <PageHeader>
               Neighborhood
               <small> a demo project</small>
             </PageHeader>
           </Row>
-          {/* <Row>
-              <Autosuggest places={this.state.places} />
-            </Row> */}
+
           <Row>
             <Col sm={12} md={4}>
               <Aside
@@ -184,29 +179,9 @@ class Main extends Component {
                 />
               </Row>
               <Row>
-                {/* <Details place={this.state.placeInFocus} /> */}
-                <Details2 place={this.state.placeInFocus} />
+                <Details place={this.state.placeInFocus} />
               </Row>
             </Col>
-
-            {/* <Col xs={12} sm={6} mdHidden={true}>
-                <DropList
-                  places={this.state.filteredPlaces}
-                  search={this.search}
-                  setFocusOnMarker={this.setFocusOnMarker}
-                  diveInDetails={this.diveInDetails}
-                />
-              </Col> */}
-            {/* <Col xs={12} sm={12} md={8} mdOffset={4}>
-              <Modal
-                isModalShowed={this.state.isModalShowed}
-                closeModal={this.closeModal}
-                place={this.state.placeInFocus}
-              />
-
-            </Col> */}
-            {/* <hr />
-                <Details place={this.state.placeInFocus} /> */}
           </Row>
         </Grid>
       </main>

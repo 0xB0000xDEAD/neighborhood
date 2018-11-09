@@ -1,15 +1,15 @@
 # Neighborhood
 
 ## Table of Contents
-* [What is this?](What\ is\ this?)
-* [How to use it](How\ to\ use\ it)
-* [Note](Note)
 
+- [What is this?](<What\ is\ this?>)
+- [How to use it](<How\ to\ use\ it>)
+- [Note](Note)
 
 ## What is this?
-Neighborhood is a demo realized for the final project of the FrontEnd developper Udacity Course. his main scope is to show how to fetch data from external API and visualize this data through google maps.
 
-A restaurants review page that load the content from a local json [file](/app/data/restaurants.json).
+Neighborhood is a demo realized for the final project of the FrontEnd Udacity Course. The main purpose is to show how to fetch data from external API ([Foursquare](http:foursquare.com))and visualize this data through google maps in a React app
+
 
 ## How to use it
 
@@ -19,25 +19,40 @@ Clone the repository with:
 $ git clone ***
 ```
 
+Run in the terminal
 
-Run in the terminal 
 ```
  $ yarn build
 ```
 
-a local server showing [index.html](/app/index.html) will be loaded in your browser.
-
-__!__  If you get some error while loading the review data, please change the port in the following code portion in [/utils/config.js](./utils/config.js)
+to build the app or if you like to explore the source code run
 
 ```
-static get DATABASE_URL() {
-    const port = 9000 // Change this to your server port
-    return `http://localhost:${port}/data/restaurants.json`;
-  }
-
+ $ yarn start
 ```
+
+to live view the app in your browser.
+The local server will respond on _localhost:3000_
+
 ## Note
 
-Please look at the _task_ in [gulpfile.js](gulpfile.js) to run other action.
+To prevent to exceed the Api call limit a copy of the real API response is served in dev from a local json server to make it easier to debug the code.
 
-To prevent to exceed the Api call limit a copy of the real API response is served in dev from a local server to make it easier to debug the code.
+**!**  The json server start automatically only when you call the _start_ script and provide the dummy data. To use this functionality set to _true_  config property  _callForReal_ in [./config.js](./config.js)
+
+```
+export const config = {
+  port: 4000,
+  callForReal: false,
+  swOnDev: false // turn on the Service Worker in dev mode
+};
+
+```
+
+Also _port_ set the json-server port and _swOnDev_ force the use of the Service Worker also in a non production environment.
+ 
+
+
+
+
+
