@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 import { Grid, Row, Col, Button, Image } from "react-bootstrap";
 
+import notFound from "../assets/images/notFound.png";
+
 export default class Details2 extends Component {
-  state = {
-    vieport: null
+  state = {};
+
+  handleError = e => {
+    e.target.src = notFound;
   };
-  componentDidMount() {
-    window.addEventListener("resize", this.handleViewport);
-  }
+
   render() {
     return (
       this.props.place !== undefined && (
@@ -17,6 +19,9 @@ export default class Details2 extends Component {
               <br />
               <Image
                 src={this.props.place.photos}
+                onError={e => {
+                  this.handleError(e);
+                }}
                 responsive
                 className="bw"
                 alt="a skatepark photo"

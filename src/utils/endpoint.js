@@ -1,5 +1,4 @@
-import { callForReal, port } from "../config";
-import { config } from "../config"
+import { config } from "../config";
 let searchParams, photoParams, detailParams;
 switch (config.callForReal) {
   case true:
@@ -21,7 +20,12 @@ switch (config.callForReal) {
     photoParams = id => {
       return {
         url: `https://api.foursquare.com/v2/venues/${id}/photos`,
-        method: "GET"
+        method: "GET",
+        qs: {
+          client_id: "1ZCYUXHNJK2TQYDJ5XMHVTXM2F5YW3V1P3W15YDWUTOBO1MN",
+          client_secret: "RHQ2UI1DMNO5HF1GTMO5YIHXZO12Z2PNUKVAF1ZRZURMZ2NI",
+          v: "20180323"
+        }
       };
     };
     detailParams = id => {
@@ -41,9 +45,11 @@ switch (config.callForReal) {
       url: `http://localhost:${config.port}/searchResponse`,
       method: "GET"
     };
-    photoParams = {
-      url: `http://localhost:${config.port}/photoResponse`,
-      method: "GET"
+    photoParams = id => {
+      return {
+        url: `http://localhost:${config.port}/photoResponse`,
+        method: "GET"
+      };
     };
     detailParams = id => {
       return {
@@ -56,10 +62,11 @@ switch (config.callForReal) {
   default:
     break;
 }
-export const apiEndpoint2 = {
+const apiEndpoint = {
   search: searchParams,
   photo: photoParams,
   detail: function(id) {
     return detailParams(id);
   }
 };
+export default apiEndpoint;

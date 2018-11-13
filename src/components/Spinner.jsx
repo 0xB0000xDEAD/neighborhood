@@ -1,12 +1,12 @@
 import React from "react";
-import { css } from "react-emotion";
+// import { css } from "react-emotion";
 import { PacmanLoader } from "react-spinners";
 
-const override = css`
-  display: block;
-  margin: 0 auto;
-  border-color: red;
-`;
+// const override = css`
+//   display: block;
+//   margin: 0 auto;
+//   border-color: red;
+// `;
 
 export default class AwesomeComponent extends React.Component {
   constructor(props) {

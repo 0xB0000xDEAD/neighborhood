@@ -1,5 +1,5 @@
 import React from "react";
-import { compose, withProps /* withHandlers */ } from "recompose";
+import { compose, withProps } from "recompose";
 import {
   withScriptjs,
   withGoogleMap,
@@ -22,9 +22,6 @@ const MyMapComponent = compose(
   withGoogleMap
 )(props => (
   <GoogleMap
-    ref={ref => {
-      this.map = ref;
-    }}
     defaultZoom={10}
     defaultOptions={{
       styles: style,
@@ -49,17 +46,13 @@ const MyMapComponent = compose(
               props.onMouseOver(markerId, e);
             }}
             onClick={e => {
-              this.map.panTo({
-                lat: element.location.lat,
-                lng: element.location.lng
-              });
               props.onMarkerClick(markerId, e);
             }}
             icon={element.icon}
           >
             {element.isSelected && (
-              <InfoWindow /* onCloseClick={props.onToggleOpen} */>
-                <p>{element.name}</p>
+              <InfoWindow /* onCloseClick={props.closeInfo} */>
+                <h5>{element.name}</h5>
               </InfoWindow>
             )}
           </Marker>
@@ -114,8 +107,6 @@ class MyMap extends React.PureComponent {
   };
 
   render() {
-    console.log();
-
     return (
       <div>
         {this.props.dataLoaded && (

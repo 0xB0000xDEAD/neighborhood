@@ -13,7 +13,7 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest);
 workbox.routing.registerRoute("/", workbox.strategies.networkFirst());
 
 workbox.routing.registerRoute(
-  new RegExp("^https://api.foursquare.com/v2/venues/search"),
+  new RegExp("^https://api.foursquare.com/v2/venues"),
   workbox.strategies.cacheFirst()
 );
 

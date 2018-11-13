@@ -36,9 +36,9 @@ The local server will respond on _localhost:3000_
 
 ## Note
 
-To prevent to exceed the Api call limit a copy of the real API response is served in dev from a local json server to make it easier to debug the code.
+To prevent to exceed the API call limit a copy of the real API response is served in dev from a local json server to make it easier to debug the code.
 
-**!**  The json server start automatically only when you call the _start_ script and provide the dummy data. To use this functionality set to _true_  config property  _callForReal_ in [./config.js](./config.js)
+**!**  The json server starts automatically only when you call the _start_ script and provide the dummy data. To use this functionality set to _true_  config property  _callForReal_ in [./config.js](./config.js)
 
 ```
 export const config = {
@@ -49,7 +49,7 @@ export const config = {
 
 ```
 
-Also _port_ set the json-server port and _swOnDev_ force the use of the Service Worker also in a non production environment.
+Also _port_ set the json-server port.
  
 
 

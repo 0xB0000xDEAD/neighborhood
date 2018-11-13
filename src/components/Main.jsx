@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { PageHeader, Grid, Row, Col } from "react-bootstrap";
 
-import * as endpoints from "../utils/endpoint";
+import { config } from "../config";
+import endpoints from "../utils/endpoint";
+import notFound from "../assets/images/notFound.png";
 
 import Aside from "./Aside";
 import MyMap from "./MyMap";
@@ -21,37 +23,45 @@ class Main extends Component {
   loadData = () => {
     let temp = []; //When  the data is fetched goes here
 
-    // alternative
-    // fetch("http://localhost:3004/searchResponse").then(function(data) {
-    //   console.log(data.json());
-    // });
-
-    callAPI(endpoints.apiEndpoint2.search)
+    callAPI(endpoints.search)
       .then(output => {
         let responseJ = JSON.parse(output);
         let places = responseJ.response.venues; // place array
 
-        //get image from api
+        //get images from api
         let imageProcess = Promise.all(
           places.map(el => {
-            return callAPI(endpoints.apiEndpoint2.photo).then(function(output) {
-              let response = JSON.parse(output);
-              return `${
-                response.response.photos.items[0].prefix
-              }500x300${response.response.photos.items[0].suffix}`;
-            });
+            return config.callForReal
+              ? callAPI(endpoints.photo(el.id))
+                  .then(function(output) {
+                    let response = JSON.parse(output);
+
+                    // console.log(`${response.response.photos.items[0].prefix}`);
+                    // console.log(`${response.response.photos.items[0].suffix}`);
+
+                    return `${
+                      response.response.photos.items[0].prefix
+                    }500x300${response.response.photos.items[0].suffix}`;
+                  })
+                  .catch(err => {
+                    console.log("An error occured, images can't be loaded");
+                  })
+              : callAPI(endpoints.photo(el.id))
+                  .then(response => {
+                    return `https://unsplash.it/500/300/?image=${Math.floor(
+                      Math.random() * 100 + 1
+                    )}`;
+                  })
+                  .catch(err => {
+                    console.log("An error occured, images can't be loaded");
+                    return notFound;
+                  });
           })
         );
 
         imageProcess.then(array => {
-          function* gen() {
-            for (const el of array) {
-              yield el;
-            }
-          }
+          let count = 0;
           for (const el of places) {
-            // console.log(el.url); // check if a attribute is present
-
             let tmp = {
               id: el.id,
               name: el.name,
@@ -62,25 +72,42 @@ class Main extends Component {
               icon: defaultPin,
               isFocusOn: false,
               areWeHovering: false,
-              // use of iterator to add the photos
-              photos: gen().next().value
+              photos: array[count] !== undefined ? array[count] : notFound
             };
+            count++;
+            // console.log(tmp.photos);
             temp.push(tmp);
           }
+          //put the places in the localStorage 
+          localStorage.setItem("data", JSON.stringify(temp));
+
           this.setState({ places: temp });
           this.setState({ filteredPlaces: temp });
           this.setState({ dataLoaded: true });
         });
       })
       .catch(err => {
-        // console.log("something went south :_(");
-        // console.log(err);
+        console.log("An error occured");
+        console.log(err);
         this.setState({ dataLoaded: false });
       });
   };
+  useData = () => {
+    let data = JSON.parse(localStorage.getItem("data"));
+
+    this.setState({ places: data });
+    this.setState({ filteredPlaces: data });
+    this.setState({ dataLoaded: true });
+  };
 
   componentDidMount() {
-    this.loadData();
+    if (localStorage.length === 0) {
+      // console.log("load data in localStorage");
+      this.loadData();
+    } else {
+      // console.log("data is in memory");
+      this.useData();
+    }
   }
 
   filterPlaces = event => {
@@ -96,7 +123,7 @@ class Main extends Component {
 
       if (results.length > 0) {
         this.setState({ filteredPlaces: results });
-        console.log(results);
+        // console.log(results);
       } else {
         this.setState({ filteredPlaces: [] });
       }
@@ -129,14 +156,22 @@ class Main extends Component {
         clickedElement.icon = clickedPin;
         clickedElement.isSelected = true;
         // api call to retrive details for the place in focus
-        callAPI(endpoints.apiEndpoint2.detail(id)).then(response => {
-          let parsed = JSON.parse(response);
-          clickedElement.description = parsed.response.venue.description;
-          clickedElement.address =
-            parsed.response.venue.location.formattedAddress;
-          clickedElement.phone = parsed.response.venue.contact.phone;
-          this.setState({ placeInFocus: clickedElement });
-        });
+        callAPI(endpoints.detail(id))
+          .then(response => {
+            let parsed = JSON.parse(response);
+            clickedElement.description = parsed.response.venue.description;
+            clickedElement.address =
+              parsed.response.venue.location.formattedAddress;
+            clickedElement.phone = parsed.response.venue.contact.phone;
+            this.setState({ placeInFocus: clickedElement });
+          })
+          .catch(err => {
+            console.log("An error occured");
+            console.log(err);
+            clickedElement.description = "no description found";
+
+            this.setState({ placeInFocus: clickedElement });
+          });
       } else {
         el.isSelected = false;
         el.icon = defaultPin;
