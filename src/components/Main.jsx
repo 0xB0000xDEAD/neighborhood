@@ -44,7 +44,11 @@ class Main extends Component {
                     }500x300${response.response.photos.items[0].suffix}`;
                   })
                   .catch(err => {
-                    console.log("An error occured, images can't be loaded");
+                    console.log(
+                      "An error occured, image source can't be retrieved"
+                    );
+                    console.error(err);
+                    return notFound;
                   })
               : callAPI(endpoints.photo(el.id))
                   .then(response => {
@@ -53,8 +57,10 @@ class Main extends Component {
                     )}`;
                   })
                   .catch(err => {
-                    console.log("An error occured, images can't be loaded");
-                    return notFound;
+                    console.log(
+                      "An error occured, image source can't be retrieved"
+                    );
+                    console.error(err);
                   });
           })
         );
@@ -72,13 +78,13 @@ class Main extends Component {
               icon: defaultPin,
               isFocusOn: false,
               areWeHovering: false,
-              photos: array[count] !== undefined ? array[count] : notFound
+              photos: array[count]
             };
             count++;
             // console.log(tmp.photos);
             temp.push(tmp);
           }
-          //put the places in the localStorage 
+          //put the places in the localStorage
           localStorage.setItem("data", JSON.stringify(temp));
 
           this.setState({ places: temp });
@@ -87,13 +93,15 @@ class Main extends Component {
         });
       })
       .catch(err => {
-        console.log("An error occured");
-        console.log(err);
+        console.log("An error occured, places can't be retrieved");
+        console.error(err);
+
         this.setState({ dataLoaded: false });
       });
   };
   useData = () => {
     let data = JSON.parse(localStorage.getItem("data"));
+    // console.log(data);
 
     this.setState({ places: data });
     this.setState({ filteredPlaces: data });
@@ -102,10 +110,10 @@ class Main extends Component {
 
   componentDidMount() {
     if (localStorage.length === 0) {
-      // console.log("load data in localStorage");
+      // console.log("store places in localStorage");
       this.loadData();
     } else {
-      // console.log("data is in memory");
+      // console.log("places are in localStorage");
       this.useData();
     }
   }
@@ -166,9 +174,9 @@ class Main extends Component {
             this.setState({ placeInFocus: clickedElement });
           })
           .catch(err => {
-            console.log("An error occured");
-            console.log(err);
-            clickedElement.description = "no description found";
+            console.log("An error occured, details can't be retrieved");
+            console.error(err);
+            clickedElement.address = "no Address found";
 
             this.setState({ placeInFocus: clickedElement });
           });

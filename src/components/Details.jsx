@@ -29,15 +29,22 @@ export default class Details2 extends Component {
             </Col>
             <Col sm={6} md={3} className="trick">
               <h3>{this.props.place.name}</h3>
-              <p>{this.props.place.address}</p>
+              {this.props.place.address !== undefined && (
+                <div>
+                  <p>{this.props.place.address}</p>
+                  <Button
+                    bsStyle="primary"
+                    onClick={e => {
+                      // TODO use maps navigation API
+                    }}
+                  >
+                    Go
+                  </Button>
+                </div>
+              )}
               <h4>{this.props.place.description}</h4>
               <h4>{this.props.place.url}</h4>
-              {this.props.place.phone !== undefined && (
-                <h5>Call the {this.props.place.phone}</h5>
-              )}
-              <p>
-                <Button bsStyle="primary">Call</Button>
-              </p>
+              <h4>{this.props.place.phone}</h4>
             </Col>
           </Row>
         </Grid>

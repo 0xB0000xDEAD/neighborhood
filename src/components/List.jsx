@@ -22,12 +22,14 @@ class List extends Component {
             header={el.name}
             onClick={e => this.handleClick(el.id, e)}
             onMouseOver={e => this.handleMouseOver(el.id, e)}
+            onMouseLeave= {e => {
+              // console.log(`leaving ${el.name}`);              
+              this.handleMouseOver("null", e)}}
           >
             {el.location.formattedAddress}
           </ListGroupItem>
         );
-      } 
-      else {
+      } else {
         store.push(
           <ListGroupItem
             active={el.isSelected}
