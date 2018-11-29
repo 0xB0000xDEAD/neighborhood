@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 
 class List extends Component {
-  componentDidMount() {}
 
   handleClick = (id, e) => {
     // console.log(`the id of the element is: ${id}`);

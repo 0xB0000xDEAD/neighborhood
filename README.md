@@ -53,9 +53,12 @@ export const config = {
 **!** Remember to set callForReal to true before you build otherwise the App will try to fetch the data from a not existing local server.
 
 Also _port_ set the json-server port.
+
+Offline usage is also possible thanks to a Service Worker. The Service Worker it's not avalaible on dev. Only when the app is builded for production the service worker will be registered,
+To build the app for production please run
+
+```
+yarn build
+
+```
  
-
-
-
-
-

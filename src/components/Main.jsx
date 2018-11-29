@@ -61,6 +61,7 @@ class Main extends Component {
                       "An error occured, image source can't be retrieved"
                     );
                     console.error(err);
+                    return notFound;
                   });
           })
         );
@@ -95,7 +96,6 @@ class Main extends Component {
       .catch(err => {
         console.log("An error occured, places can't be retrieved");
         console.error(err);
-
         this.setState({ dataLoaded: false });
       });
   };
@@ -109,7 +109,7 @@ class Main extends Component {
   };
 
   componentDidMount() {
-    if (localStorage.length === 0) {
+    if (localStorage.getItem("data") === null) {
       // console.log("store places in localStorage");
       this.loadData();
     } else {
@@ -176,7 +176,7 @@ class Main extends Component {
           .catch(err => {
             console.log("An error occured, details can't be retrieved");
             console.error(err);
-            clickedElement.address = "no Address found";
+            clickedElement.description = "Can't retrieve the details. Please check the console";
 
             this.setState({ placeInFocus: clickedElement });
           });
@@ -213,6 +213,11 @@ class Main extends Component {
             </Col>
             <Col sm={12} md={8}>
               <Row>
+                {!this.state.dataLoaded && (
+                  <p>Data can't be retrieved. Please check the console log.</p>
+                )}
+              </Row>
+              <Row>
                 <MyMap
                   places={this.state.filteredPlaces}
                   setFocusOnMarker={this.setFocusOnMarker}
@@ -225,6 +230,21 @@ class Main extends Component {
                 <Details place={this.state.placeInFocus} />
               </Row>
             </Col>
+          </Row>
+          <Row>
+            <footer>
+              <br />
+              <p>
+                All the data is provided through{" "}
+                <a
+                  href="https://developer.foursquare.com/places-api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Foursquare API!
+                </a>
+              </p>
+            </footer>
           </Row>
         </Grid>
       </main>

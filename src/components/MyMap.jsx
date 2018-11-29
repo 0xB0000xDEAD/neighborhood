@@ -15,7 +15,9 @@ const MyMapComponent = compose(
     googleMapURL:
       "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCnFVAyZgmwJeECuz5mpLxfEsqQPYMzOSo&v=3",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div id="map" style={{ height: `400px` }} />,
+    containerElement: (
+      <div id="map" role="application" style={{ height: `400px` }} />
+    ),
     mapElement: <div style={{ height: `100%` }} />
   }),
   withScriptjs,
@@ -66,11 +68,18 @@ class MyMap extends React.PureComponent {
   state = {
     isMarkerShown: false,
     position: {},
-    clickedMarker: this.props.placeInFocus
+    clickedMarker: this.props.placeInFocus,
+    mapError: false
   };
 
   componentDidMount() {
     this.delayedShowMarker();
+    window.gm_authFailure = () => {
+      // gm_authFailure() already throw the error at console
+      // console.error("Map can't be loaded.Please check the Google Maps API key");
+      // updateAuthError
+      this.setState({ mapError: true });
+    };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -107,20 +116,26 @@ class MyMap extends React.PureComponent {
   };
 
   render() {
-    return (
-      <div>
-        {this.props.dataLoaded && (
-          <MyMapComponent
-            onMarkerClick={this.handleMarkerClick}
-            onMouseOver={this.handleMarkerOver}
-            places={this.props.places}
-            centerPos={this.state.position}
-            isMarkerShown={this.state.isMarkerShown}
-            placeInFocus={this.props.placeInFocus}
-          />
-        )}
-      </div>
-    );
+    if (this.state.mapError) {
+      return (
+        <p> Error occurred getting Google Maps. Please check the console</p>
+      );
+    } else {
+      return (
+        <div>
+          {this.props.dataLoaded && (
+            <MyMapComponent
+              onMarkerClick={this.handleMarkerClick}
+              onMouseOver={this.handleMarkerOver}
+              places={this.props.places}
+              centerPos={this.state.position}
+              isMarkerShown={this.state.isMarkerShown}
+              placeInFocus={this.props.placeInFocus}
+            />
+          )}
+        </div>
+      );
+    }
   }
 }
 

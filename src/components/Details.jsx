@@ -4,8 +4,6 @@ import { Grid, Row, Col, Button, Image } from "react-bootstrap";
 import notFound from "../assets/images/notFound.png";
 
 export default class Details2 extends Component {
-  state = {};
-
   handleError = e => {
     e.target.src = notFound;
   };
@@ -31,7 +29,7 @@ export default class Details2 extends Component {
               <h3>{this.props.place.name}</h3>
               {this.props.place.address !== undefined && (
                 <div>
-                  <p>{this.props.place.address}</p>
+                  <h4>{this.props.place.address}</h4>
                   <Button
                     bsStyle="primary"
                     onClick={e => {

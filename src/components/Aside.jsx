@@ -10,7 +10,7 @@ const Aside = props => {
       <Filter places={props.places} search={props.search} />
       {!props.dataLoaded && (
         <div>
-          <span>loading... please wait</span>
+          <span>loading...</span>
           <Spinner />
         </div>
       )}
